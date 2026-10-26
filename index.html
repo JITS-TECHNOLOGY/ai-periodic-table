@@ -53,7 +53,7 @@
   /* With a real video: show it uncropped at its own shape, and move the copy below it. */
   .hero.has-video .hero-media { position: relative; inset: auto; aspect-ratio: 1620 / 720; max-width: 100%; height: auto; background: #000; }
   .hero.has-video .hero-media::after { display: none; }
-  .hero.has-video .hero-media video { object-fit: contain; }
+  .hero.has-video .hero-media video { object-fit: contain; cursor: pointer; }
   .hero.has-video .hero-inner { padding-block: 28px 36px; }
   .hero.has-video h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
@@ -359,6 +359,8 @@
         canvas.hidden = true;
         document.querySelector(".hero").classList.add("has-video");
         document.getElementById("videoNote").hidden = true;
+        video.title = "Click to play or pause";
+        video.addEventListener("click", () => { video.paused ? video.play().catch(() => {}) : video.pause(); });
         const sound = document.getElementById("soundToggle");
         sound.hidden = false;
         sound.addEventListener("click", () => {
