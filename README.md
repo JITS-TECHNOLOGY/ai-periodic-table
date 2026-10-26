@@ -8,6 +8,10 @@ Open `index.html` in any browser. No install or internet needed (fonts load from
 - Click a revealed square: shows the definition with the answer.
 - "Reveal all" / "Reset board" are above the board. The Presenter key at the bottom lists every definition.
 
+## Waiting screen
+Click "Waiting screen" under the hero (or "Powered by Azorian3" in the footer) to show the full-screen
+Azorian3 sponsor screen with QR code and contact details. It stays up until you click Close or press Esc.
+
 ## Hero video
 The hero plays `hero.mp4`. To swap it, replace that file, or point
 `const HERO_VIDEO` near the top of the script at another file.
