@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Libre+Franklin:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
-  /* Layout: full-bleed video hero, then a Jeopardy board (5 categories x 4 rounds) that fills in from blue to white as answers are revealed, then a presenter key. */
+  /* Layout: video hero shown at its own shape, then a Jeopardy board (5 categories x 4 rounds) that fills in from blue to white as answers are revealed, then a presenter key. */
   :root {
     --navy: #0B1D3F;
     --navy-deep: #06122A;
@@ -50,6 +50,12 @@
   .btn.primary { background: var(--red); border-color: var(--red); }
   .btn:hover { background: var(--white); color: var(--navy); border-color: var(--white); }
   .video-note { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  /* With a real video: show it uncropped at its own shape, and move the copy below it. */
+  .hero.has-video .hero-media { position: relative; inset: auto; aspect-ratio: 1620 / 720; max-width: 100%; height: auto; background: #000; }
+  .hero.has-video .hero-media::after { display: none; }
+  .hero.has-video .hero-media video { object-fit: contain; }
+  .hero.has-video .hero-inner { padding-block: 28px 36px; }
+  .hero.has-video h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
   /* ---------- Board ---------- */
   .board-section { padding-block: 56px 40px; background: var(--navy-deep); }
@@ -135,6 +141,7 @@
     <p class="lede">Five families, four levels of maturity. Every AI product you have used is built from a handful of these elements. Pick a square, hear the clue, then name the element.</p>
     <div class="hero-actions">
       <a class="btn primary" href="#board">Play the board</a>
+      <button class="btn" id="soundToggle" type="button" aria-pressed="false" hidden>Sound on</button>
       <span class="video-note" id="videoNote">Placeholder hero. Your video goes here.</span>
     </div>
   </div>
@@ -189,7 +196,7 @@
 
 <script>
   // To use your own hero video, set this to a file path next to index.html (e.g. "hero.mp4").
-  const HERO_VIDEO = "";
+  const HERO_VIDEO = "hero.mp4";
 
   const COLUMNS = ["Reactive", "Retrieval", "Orchestration", "Validation", "Models"];
   const ROWS = [
@@ -350,7 +357,16 @@
       video.addEventListener("loadeddata", () => {
         video.hidden = false;
         canvas.hidden = true;
+        document.querySelector(".hero").classList.add("has-video");
         document.getElementById("videoNote").hidden = true;
+        const sound = document.getElementById("soundToggle");
+        sound.hidden = false;
+        sound.addEventListener("click", () => {
+          video.muted = !video.muted;
+          if (!video.muted) video.play().catch(() => {});
+          sound.textContent = video.muted ? "Sound on" : "Sound off";
+          sound.setAttribute("aria-pressed", String(!video.muted));
+        });
       }, { once: true });
     }
     const ctx = canvas.getContext("2d");
@@ -365,6 +381,7 @@
       stars = Array.from({ length: n }, () => ({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 1.6 + .4, p: Math.random() * Math.PI * 2, v: Math.random() * .25 + .05 }));
     }
     function frame(t) {
+      if (canvas.hidden) return;
       t = t / 1000;
       ctx.fillStyle = "#0B1D3F";
       ctx.fillRect(0, 0, w, h);
